@@ -20,6 +20,8 @@ from rest_framework import routers, permissions
 from api import viewsets
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
+from django.conf.urls.static import static
+from setup import settings
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -47,6 +49,7 @@ route.register(r'medicoes-veiculo', viewsets.MedicaoVeiculoViewSet, basename='me
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include(route.urls)),
+    path('medicoes-veiculos/importar/', viewsets.ImportarMedicaoCSVViewSet.as_view(), name='importar-medicoes-veiculo'),
 ]
 
 # URLs para a documentação Swagger
@@ -54,4 +57,4 @@ urlpatterns += [
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
     path('swagger.json/', schema_view.without_ui(cache_timeout=0), name='schema-json'),
-]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

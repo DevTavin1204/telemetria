@@ -44,3 +44,10 @@ class MedicaoVeiculo(models.Model):
 
     def __str__(self):
         return f"{self.veiculo} - {self.medicao}: {self.valor} em {self.data_hora}"
+    
+class MedicaoVeiculoTemp(models.Model):
+    veiculo = models.ForeignKey(Veiculo, on_delete=models.CASCADE)
+    medicao = models.ForeignKey(Medicao, on_delete=models.CASCADE)
+    valor = models.FloatField()
+    data_hora = models.DateTimeField(auto_now_add=True)
+    arquivoid = models.CharField(max_length=256, db_index=True)

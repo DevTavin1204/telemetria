@@ -137,3 +137,16 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOW_ALL_ORIGINS = True
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+MQTT = {
+    "HOST": "jaragua.lmq.cloudamqp.com",
+    "PORT": 1883,
+    "KEEPALIVE": 60,
+    "TOPIC": "dadosSensor",
+    "CLIENT_ID": "django-mqtt-worker",
+    "USERNAME": "auxyfrto:auxyfrto",
+    "PASSWORD": "Eb3hOjSaXdJl5MKTNOP9Cq0USEXDxQvK",
+}

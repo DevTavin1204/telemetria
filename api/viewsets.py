@@ -3,6 +3,12 @@ from telemetria import models
 from api import serializers
 from drf_yasg.utils import swagger_auto_schema
 
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.parsers import MultiPartParser, FormParser
+from api.services import processar_csv_medicoes
+
 class MarcaViewSet(viewsets.ModelViewSet):
     queryset = models.Marca.objects.all()
     serializer_class = serializers.MarcaSerializer
@@ -230,3 +236,43 @@ class MedicaoVeiculoViewSet(viewsets.ModelViewSet):
     )
     def destroy(self, request, *args, **kwargs):
         return super().destroy(request, *args, **kwargs)
+    
+class ImportarMedicaoCSVViewSet(APIView):
+    parser_classes = [MultiPartParser, FormParser]
+   
+    def post(self, request, *args, **kwargs):
+       
+        serializer = serializers.UploadCSVSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        arquivo = serializer.validated_data.get("arquivo")
+
+        try:
+            resultado = processar_csv_medicoes(arquivo)
+
+            resposta = {
+                "mensagem": "Arquivo processado com sucesso.",
+                **resultado
+            }
+
+            return Response(resposta, status=status.HTTP_201_CREATED)
+
+        except Exception as erro:
+            return Response(
+                {
+                    "erro": "Falha ao processar o arquivo.",
+                    "detalhe": str(erro)
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+
+class MedicaoVeiculoTempViewSet(viewsets.ModelViewSet):
+    queryset = models.MedicaoVeiculoTemp.objects.all()
+    serializer_class = serializers.MedicaoVeiculoTempSerializer
+    @swagger_auto_schema(
+        operation_description="Retorna uma lista de todas as medições temporárias de veículos registradas.",
+        responses = {200: serializers.MedicaoVeiculoTempSerializer(many=True)}
+    )
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
